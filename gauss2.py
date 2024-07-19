@@ -16,22 +16,24 @@ def rescaleFrame(frame, scale):
 
 # Adaptive Thresholding with Noise Reduction
 def preprocess(frame):
+    # Apply Gaussian blur to reduce noise
+    blurred = cv2.GaussianBlur(frame, (5, 5), 0)
 
-    # enhance contrast
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-    enhanced = clahe.apply(frame)
-
-    # Apply Otsu's thresholding
-    _, otsu = cv2.threshold(enhanced, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Remove noise using median blur
-    denoised = cv2.medianBlur(otsu, 3)
-
-    return denoised
+    # Apply adaptive thresholding
+    thresh = cv2.adaptiveThreshold(
+        blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY, 11, 2)
+    
+    # Apply morphological operations to remove small noise
+    kernel = np.ones((3,3), np.uint8)
+    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel,
+                               iterations=2)
+    
+    return opening
 
 preimg = preprocess(image1)
 
-cv2.imwrite('preprocessed_image.jpg', preimg)
+cv2.imwrite('preprocessed_image1.jpg', preimg)
 
 re_preprocessedimage = rescaleFrame(preimg, 0.20)
 
@@ -41,4 +43,4 @@ re_preprocessedimage = rescaleFrame(preimg, 0.20)
 # cv2.imshow('Resized Grayscale2', re_gray2)
 # cv2.imshow('Resized Binary', re_binary1)
 cv2.imshow('rescaled_Processed', re_preprocessedimage)
-cv2.waitKey(5000)
+cv2.waitKey(5000000)

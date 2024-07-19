@@ -31,7 +31,7 @@ def preprocess(frame):
 
 preimg = preprocess(image1)
 
-cv2.imwrite('preprocessed_image.jpg', preimg)
+cv2.imwrite('preprocessed_image1.jpg', preimg)
 
 re_preprocessedimage = rescaleFrame(preimg, 0.20)
 
